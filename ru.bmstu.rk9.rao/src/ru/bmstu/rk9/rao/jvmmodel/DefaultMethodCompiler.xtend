@@ -15,6 +15,8 @@ class DefaultMethodCompiler extends RaoEntityCompiler {
 		initializeCurrent(jvmTypesBuilder, typeReferenceBuilder);
 
 		switch (method.name) {
+			case DefaultMethodsHelper.GlobalMethodInfo.EXPERIMENTS.name:
+				return method.asRunnable(it, isPreIndexingPhase)
 			case DefaultMethodsHelper.GlobalMethodInfo.INIT.name:
 				return method.asRunnable(it, isPreIndexingPhase)
 			case DefaultMethodsHelper.GlobalMethodInfo.TERMINATE_CONDITION.name:

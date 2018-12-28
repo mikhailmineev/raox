@@ -40,6 +40,7 @@ public class Simulator implements ISimulator {
 		time = initializationInfo.getTimeStart();
 		timeFormatter = initializationInfo.getTimeFormatter();
 		database.setTimeFormatter(timeFormatter);
+		experiments = initializationInfo.getExperiments();
 
 		for (Supplier<Boolean> terminateCondition : initializationInfo.terminateConditions)
 			terminateList.add(terminateCondition);
@@ -139,8 +140,16 @@ public class Simulator implements ISimulator {
 		executionAborted = true;
 	}
 
+	private Runnable experiments;
+
+	@Override
+	public void runExperiments() {
+		experiments.run();
+	}
+
 	@Override
 	public SimulationStopCode run() {
+		time = 0;
 		database.addSystemEntry(Database.SystemEntryType.SIM_START);
 
 		notifyChange(ExecutionState.EXECUTION_STARTED);

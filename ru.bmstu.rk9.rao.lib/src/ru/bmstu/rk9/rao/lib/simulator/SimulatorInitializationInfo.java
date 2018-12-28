@@ -10,6 +10,7 @@ import ru.bmstu.rk9.rao.lib.process.Block;
 import ru.bmstu.rk9.rao.lib.result.AbstractResult;
 
 public class SimulatorInitializationInfo {
+	private static final Runnable DEFAULT_EXPERIMENTS = new DefaultExperiments();
 	public static final Function<Double, String> DEFAULT_TIME_FORMATTER = (currentTime) -> currentTime.toString();
 
 	/*
@@ -40,5 +41,17 @@ public class SimulatorInitializationInfo {
 
 	public void setTimeStart(Supplier<Double> timeStart) {
 		this.timeStart = timeStart.get();
+	}
+
+	private Runnable experiments;
+
+	public void setExperiments(Runnable experiments) {
+		this.experiments = experiments;
+	}
+
+	public Runnable getExperiments() {
+		if (experiments == null)
+			return DEFAULT_EXPERIMENTS;
+		return experiments;
 	}
 }

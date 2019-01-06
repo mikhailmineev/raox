@@ -60,7 +60,7 @@ public class ExecutionJobProvider {
 
 					try {
 						CurrentSimulator.preinitialize(parser.getSimulatorPreinitializationInfo());
-					} catch (Exception e) {
+					} catch (Exception | ExceptionInInitializerError e) {
 						e.printStackTrace();
 						return niceError("Simulator preinitialization failed", e);
 					}

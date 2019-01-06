@@ -11,13 +11,9 @@ import ru.bmstu.rk9.rao.lib.process.Transact;
 public class SimulatorPreinitializationInfo {
 	public SimulatorPreinitializationInfo() {
 		modelStructure = generateModelStructureStub();
-		resourceClasses.add(Transact.class);
+		getResourceClasses().add(Transact.class);
 	}
 
-	/*
-	 * TODO Fix bad practice, fields should be private and modified through getters
-	 * and setters
-	 */
 	public final JSONObject modelStructure;
 	public final List<Class<?>> resourceClasses = new ArrayList<>();
 	public final List<Runnable> resourcePreinitializers = new ArrayList<>();
@@ -30,5 +26,17 @@ public class SimulatorPreinitializationInfo {
 				.put(ModelStructureConstants.EVENTS, new JSONArray())
 				.put(ModelStructureConstants.LOGICS, new JSONArray())
 				.put(ModelStructureConstants.SEARCHES, new JSONArray());
+	}
+
+	public JSONObject getModelStructure() {
+		return modelStructure;
+	}
+
+	public List<Class<?>> getResourceClasses() {
+		return resourceClasses;
+	}
+
+	public List<Runnable> getResourcePreinitializers() {
+		return resourcePreinitializers;
 	}
 }

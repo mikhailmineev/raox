@@ -108,8 +108,8 @@ public class ModelInternalsParser {
 
 		classLoader = new URLClassLoader(urls, CurrentSimulator.class.getClassLoader());
 
-		simulatorPreinitializationInfo.modelStructure.put(ModelStructureConstants.NAME, project.getName());
-		simulatorPreinitializationInfo.modelStructure.put(ModelStructureConstants.LOCATION,
+		simulatorPreinitializationInfo.getModelStructure().put(ModelStructureConstants.NAME, project.getName());
+		simulatorPreinitializationInfo.getModelStructure().put(ModelStructureConstants.LOCATION,
 				project.getLocation().toString());
 
 		final ResourceSet resourceSet = resourceSetProvider.get(project);
@@ -119,7 +119,7 @@ public class ModelInternalsParser {
 		}
 
 		List<IResource> raoFiles = BuildUtil.getAllFilesInProject(project, "rao");
-		simulatorPreinitializationInfo.modelStructure.put(ModelStructureConstants.NUMBER_OF_MODELS, raoFiles.size());
+		simulatorPreinitializationInfo.getModelStructure().put(ModelStructureConstants.NUMBER_OF_MODELS, raoFiles.size());
 
 		for (IResource raoFile : raoFiles) {
 			String raoFileName = raoFile.getName();
@@ -162,7 +162,7 @@ public class ModelInternalsParser {
 			Class<?> init = Class.forName(modelClassName + "$init", false, classLoader);
 			Constructor<?> initConstructor = init.getDeclaredConstructor();
 			initConstructor.setAccessible(true);
-			simulatorInitializationInfo.initList.add((Runnable) initConstructor.newInstance());
+			simulatorInitializationInfo.getInitList().add((Runnable) initConstructor.newInstance());
 		} catch (ClassNotFoundException classException) {
 		}
 
@@ -170,7 +170,7 @@ public class ModelInternalsParser {
 			Class<?> terminate = Class.forName(modelClassName + "$terminateCondition", false, classLoader);
 			Constructor<?> terminateConstructor = terminate.getDeclaredConstructor();
 			terminateConstructor.setAccessible(true);
-			simulatorInitializationInfo.terminateConditions.add((Supplier<Boolean>) terminateConstructor.newInstance());
+			simulatorInitializationInfo.getTerminateConditions().add((Supplier<Boolean>) terminateConstructor.newInstance());
 		} catch (ClassNotFoundException classException) {
 		}
 
@@ -196,7 +196,7 @@ public class ModelInternalsParser {
 					classLoader);
 			Constructor<?> resourcePreinitializerConstructor = resourcePreinitializer.getDeclaredConstructor();
 			resourcePreinitializerConstructor.setAccessible(true);
-			simulatorPreinitializationInfo.resourcePreinitializers
+			simulatorPreinitializationInfo.getResourcePreinitializers()
 					.add((Runnable) resourcePreinitializerConstructor.newInstance());
 		} catch (ClassNotFoundException classException) {
 		}
@@ -227,7 +227,7 @@ public class ModelInternalsParser {
 					offset += dataType.getSize();
 			}
 
-			simulatorPreinitializationInfo.modelStructure.getJSONArray(ModelStructureConstants.RESOURCE_TYPES)
+			simulatorPreinitializationInfo.getModelStructure().getJSONArray(ModelStructureConstants.RESOURCE_TYPES)
 					.put(new JSONObject().put(ModelStructureConstants.NAME, name)
 							.put(ModelStructureConstants.NAMED_RESOURCES, new JSONArray())
 							.put(ModelStructureConstants.PARAMETERS, parameters)
@@ -239,7 +239,7 @@ public class ModelInternalsParser {
 			String name = modelClassName + "." + entity.getName();
 
 			if (entity instanceof ru.bmstu.rk9.rao.rao.Event) {
-				simulatorPreinitializationInfo.modelStructure.getJSONArray(ModelStructureConstants.EVENTS)
+				simulatorPreinitializationInfo.getModelStructure().getJSONArray(ModelStructureConstants.EVENTS)
 						.put(new JSONObject().put(ModelStructureConstants.NAME, name));
 				continue;
 			}
@@ -275,7 +275,7 @@ public class ModelInternalsParser {
 					}
 				}
 
-				simulatorPreinitializationInfo.modelStructure.getJSONArray(ModelStructureConstants.PATTERNS)
+				simulatorPreinitializationInfo.getModelStructure().getJSONArray(ModelStructureConstants.PATTERNS)
 						.put(new JSONObject().put(ModelStructureConstants.NAME, name)
 								.put(ModelStructureConstants.TYPE, typeString)
 								.put(ModelStructureConstants.RELEVANT_RESOURCES, relevantResources));
@@ -287,7 +287,7 @@ public class ModelInternalsParser {
 				for (ru.bmstu.rk9.rao.rao.Activity activity : ((ru.bmstu.rk9.rao.rao.Logic) entity).getActivities())
 					activities.put(new JSONObject().put(ModelStructureConstants.NAME, activity.getName()));
 
-				simulatorPreinitializationInfo.modelStructure.getJSONArray(ModelStructureConstants.LOGICS)
+				simulatorPreinitializationInfo.getModelStructure().getJSONArray(ModelStructureConstants.LOGICS)
 						.put(new JSONObject().put(ModelStructureConstants.NAME, name)
 								.put(ModelStructureConstants.ACTIVITIES, activities));
 				continue;
@@ -298,7 +298,7 @@ public class ModelInternalsParser {
 				for (ru.bmstu.rk9.rao.rao.Edge edge : ((ru.bmstu.rk9.rao.rao.Search) entity).getEdges())
 					edges.put(new JSONObject().put(ModelStructureConstants.NAME, edge.getName()));
 
-				simulatorPreinitializationInfo.modelStructure.getJSONArray(ModelStructureConstants.SEARCHES)
+				simulatorPreinitializationInfo.getModelStructure().getJSONArray(ModelStructureConstants.SEARCHES)
 						.put(new JSONObject().put(ModelStructureConstants.NAME, name).put(ModelStructureConstants.EDGES,
 								edges));
 				continue;
@@ -310,7 +310,7 @@ public class ModelInternalsParser {
 						.getActualType(constructor);
 				String typeName = NamingHelper.changeDollarToDot(typeReference.getJavaIdentifier());
 
-				JSONArray resourceTypes = simulatorPreinitializationInfo.modelStructure
+				JSONArray resourceTypes = simulatorPreinitializationInfo.getModelStructure()
 						.getJSONArray(ModelStructureConstants.RESOURCE_TYPES);
 				JSONObject resourceType = null;
 				for (int i = 0; i < resourceTypes.length(); i++) {
@@ -328,7 +328,7 @@ public class ModelInternalsParser {
 			}
 
 			if (entity instanceof ru.bmstu.rk9.rao.rao.Result) {
-				simulatorPreinitializationInfo.modelStructure.getJSONArray(ModelStructureConstants.RESULTS)
+				simulatorPreinitializationInfo.getModelStructure().getJSONArray(ModelStructureConstants.RESULTS)
 						.put(new JSONObject().put(ModelStructureConstants.NAME, name));
 				continue;
 			}
@@ -336,7 +336,7 @@ public class ModelInternalsParser {
 
 		for (Class<?> nestedModelClass : modelClass.getDeclaredClasses()) {
 			if (ComparableResource.class.isAssignableFrom(nestedModelClass)) {
-				simulatorPreinitializationInfo.resourceClasses.add(nestedModelClass);
+				simulatorPreinitializationInfo.getResourceClasses().add(nestedModelClass);
 				continue;
 			}
 
@@ -400,12 +400,12 @@ public class ModelInternalsParser {
 
 			String name = NamingHelper.createFullNameForMember(resultField);
 			result.setName(name);
-			simulatorInitializationInfo.results.add(result);
+			simulatorInitializationInfo.getResults().add(result);
 		}
 
 		for (Class<?> decisionPointClass : decisionPointClasses) {
 			AbstractDecisionPoint dpt = (AbstractDecisionPoint) decisionPointClass.newInstance();
-			simulatorInitializationInfo.decisionPoints.add(dpt);
+			simulatorInitializationInfo.getDecisionPoints().add(dpt);
 		}
 
 		for (IResource processFile : BuildUtil.getAllFilesInProject(project, "proc")) {
@@ -413,7 +413,7 @@ public class ModelInternalsParser {
 			if (model == null)
 				model = new ProcessModelNode();
 			List<Block> blocks = BlockConverter.convertModelToBlocks(model, modelContentsInfo);
-			simulatorInitializationInfo.processBlocks.addAll(blocks);
+			simulatorInitializationInfo.getProcessBlocks().addAll(blocks);
 		}
 
 		for (Class<?> animationClass : animationClasses) {
